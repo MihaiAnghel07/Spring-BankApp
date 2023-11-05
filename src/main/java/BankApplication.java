@@ -2,38 +2,57 @@ import com.luxoft.bankapp.exceptions.ActiveAccountNotSet;
 import com.luxoft.bankapp.model.AbstractAccount;
 import com.luxoft.bankapp.model.CheckingAccount;
 import com.luxoft.bankapp.model.Client;
+import com.luxoft.bankapp.model.Client.Gender;
 import com.luxoft.bankapp.model.SavingAccount;
 import com.luxoft.bankapp.service.BankReportService;
-import com.luxoft.bankapp.service.BankReportServiceImpl;
 import com.luxoft.bankapp.service.Banking;
-import com.luxoft.bankapp.service.BankingImpl;
-import com.luxoft.bankapp.model.Client.Gender;
 import com.luxoft.bankapp.service.storage.ClientRepository;
 import com.luxoft.bankapp.service.storage.MapClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
+@Configuration
+@ComponentScan("com.luxoft.bankApp")
+@PropertySource("classpath:clients.properties")
 public class BankApplication {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private Environment environment;
+
 
     private static final String[] CLIENT_NAMES =
             {"Jonny Bravo", "Adam Budzinski", "Anna Smith"};
 
     public static void main(String[] args) {
 
+//        ApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml", "test-clients.xml");
+
+        ApplicationContext context = new AnnotationConfigApplicationContext(BankApplication.class);
         ClientRepository repository = new MapClientRepository();
-        Banking banking = initialize(repository);
+        Banking banking = initialize(context);
 
-        workWithExistingClients(banking);
+        workWithExistingClients(context);
 
-        bankingServiceDemo(banking);
+        bankingServiceDemo(context);
 
-//        bankReportsDemo(repository);
+        bankReportsDemo(context);
     }
 
-    public static void bankReportsDemo(ClientRepository repository) {
+    public static void bankReportsDemo(ApplicationContext context) {
 
         System.out.println("\n=== Using BankReportService ===\n");
 
-        BankReportService reportService = new BankReportServiceImpl();
-        reportService.setRepository(repository);
+//        BankReportService reportService = (BankReportService) context.getBean("BankReportServiceImpl");
+        BankReportService reportService = context.getBean(BankReportService.class);
+
+//        reportService.setRepository(repository);
 
         System.out.println("Number of clients: " + reportService.getNumberOfBankClients());
 
@@ -42,10 +61,11 @@ public class BankApplication {
         System.out.println("Bank Credit Sum: " + reportService.getBankCreditSum());
     }
 
-    public static void bankingServiceDemo(Banking banking) {
+    public static void bankingServiceDemo(ApplicationContext context) {
 
         System.out.println("\n=== Initialization using Banking implementation ===\n");
 
+        Banking banking = context.getBean(Banking.class);
         Client anna = new Client(CLIENT_NAMES[2], Gender.FEMALE);
         anna = banking.addClient(anna);
 
@@ -62,11 +82,12 @@ public class BankApplication {
         banking.getAllAccounts(anna).stream().forEach(System.out::println);
     }
 
-    public static void workWithExistingClients(Banking banking) {
+    public static void workWithExistingClients(ApplicationContext context) {
 
         System.out.println("\n=======================================");
         System.out.println("\n===== Work with existing clients ======");
 
+        Banking banking = context.getBean(Banking.class);
         Client jonny = banking.getClient(CLIENT_NAMES[0]);
 
         try {
@@ -100,12 +121,13 @@ public class BankApplication {
     /*
      * Method that creates a few clients and initializes them with sample values
      */
-    public static Banking initialize(ClientRepository repository) {
+    public static Banking initialize(ApplicationContext context) {
 
-        Banking banking = new BankingImpl();
-        banking.setRepository(repository);
+        Banking banking = (Banking) context.getBean("BankingImpl");
+//        banking.setRepository(repository);
 
-        Client client_1 = new Client(CLIENT_NAMES[0], Gender.MALE);
+//        Client client_1 = new Client(CLIENT_NAMES[0], Gender.MALE);
+        Client client_1 = (Client) context.getBean("client1");
 
         AbstractAccount savingAccount = new SavingAccount(1000);
         client_1.addAccount(savingAccount);
@@ -113,7 +135,8 @@ public class BankApplication {
         AbstractAccount checkingAccount = new CheckingAccount(1000);
         client_1.addAccount(checkingAccount);
 
-        Client client_2 = new Client(CLIENT_NAMES[1], Gender.MALE);
+//        Client client_2 = new Client(CLIENT_NAMES[1], Gender.MALE);
+        Client client_2 = (Client) context.getBean("client2");
 
         AbstractAccount checking = new CheckingAccount(1500);
         client_2.addAccount(checking);

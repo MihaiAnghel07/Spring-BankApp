@@ -3,6 +3,8 @@ package com.luxoft.bankapp.model;
 import com.luxoft.bankapp.exceptions.AccountNumberLimitException;
 import com.luxoft.bankapp.exceptions.ActiveAccountNotSet;
 import com.luxoft.bankapp.service.storage.ClientRepository;
+import org.springframework.context.annotation.Bean;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,37 @@ public class Client {
         this.name = name;
         this.gender = gender;
     }
+
+    @Bean(name = "client2")
+    public Client getDemoClient2()
+    {
+        String name = environment.getProperty("client2");
+
+        Client client = new Client(name, Gender.MALE);
+        client.setCity("Kiev");
+
+        AbstractAccount checking = (CheckingAccount) applicationContext.getBean("checkingAccount2");
+
+        client.addAccount(checking);
+
+        return client;
+    }
+
+    @Bean(name = "client1")
+    public Client getDemoClient1()
+    {
+        String name = environment.getProperty("client1");
+
+        Client client = new Client(name, Gender.MALE);
+        client.setCity("Moscow");
+
+        AbstractAccount checking = (CheckingAccount) applicationContext.getBean("checkingAccount1");
+
+        client.addAccount(checking);
+
+        return client;
+    }
+
 
     public synchronized double getBalance() {
 

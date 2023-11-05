@@ -1,6 +1,7 @@
 package com.luxoft.bankapp.model;
 
 import com.luxoft.bankapp.exceptions.NotEnoughFundsException;
+import org.springframework.context.annotation.Bean;
 
 public class SavingAccount extends AbstractAccount {
 
@@ -12,6 +13,12 @@ public class SavingAccount extends AbstractAccount {
         if (initialBalance >= 0) {
             setBalance(initialBalance);
         }
+    }
+
+    @Bean(name = "savingAccount1")
+    public SavingAccount getDemoSavingAccount1()
+    {
+        return new SavingAccount(1000);
     }
 
     @Override
