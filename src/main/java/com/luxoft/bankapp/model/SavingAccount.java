@@ -2,7 +2,9 @@ package com.luxoft.bankapp.model;
 
 import com.luxoft.bankapp.exceptions.NotEnoughFundsException;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SavingAccount extends AbstractAccount {
 
     public SavingAccount() {

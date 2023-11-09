@@ -10,14 +10,13 @@ import com.luxoft.bankapp.service.storage.ClientRepository;
 import com.luxoft.bankapp.service.storage.MapClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
-@ComponentScan("com.luxoft.bankApp")
+@ComponentScan("com.luxoft.bankapp")
 @PropertySource("classpath:clients.properties")
 public class BankApplication {
 
@@ -29,6 +28,13 @@ public class BankApplication {
 
     private static final String[] CLIENT_NAMES =
             {"Jonny Bravo", "Adam Budzinski", "Anna Smith"};
+
+    @Bean("placeholderConfigurer")
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+        propertySourcesPlaceholderConfigurer.setLocation(new ClassPathResource("clients.properties"));
+        return propertySourcesPlaceholderConfigurer;
+    }
 
     public static void main(String[] args) {
 
@@ -129,17 +135,17 @@ public class BankApplication {
 //        Client client_1 = new Client(CLIENT_NAMES[0], Gender.MALE);
         Client client_1 = (Client) context.getBean("client1");
 
-        AbstractAccount savingAccount = new SavingAccount(1000);
-        client_1.addAccount(savingAccount);
-
-        AbstractAccount checkingAccount = new CheckingAccount(1000);
-        client_1.addAccount(checkingAccount);
+//        AbstractAccount savingAccount = new SavingAccount(1000);
+//        client_1.addAccount(savingAccount);
+//
+//        AbstractAccount checkingAccount = new CheckingAccount(1000);
+//        client_1.addAccount(checkingAccount);
 
 //        Client client_2 = new Client(CLIENT_NAMES[1], Gender.MALE);
         Client client_2 = (Client) context.getBean("client2");
 
-        AbstractAccount checking = new CheckingAccount(1500);
-        client_2.addAccount(checking);
+//        AbstractAccount checking = new CheckingAccount(1500);
+//        client_2.addAccount(checking);
 
         banking.addClient(client_1);
         banking.addClient(client_2);

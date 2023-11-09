@@ -3,12 +3,21 @@ package com.luxoft.bankapp.model;
 import com.luxoft.bankapp.exceptions.AccountNumberLimitException;
 import com.luxoft.bankapp.exceptions.ActiveAccountNotSet;
 import com.luxoft.bankapp.service.storage.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class Client {
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private Environment environment;
 
     private long id;
 
@@ -32,30 +41,30 @@ public class Client {
         this.gender = gender;
     }
 
-    @Bean(name = "client2")
-    public Client getDemoClient2()
-    {
-        String name = environment.getProperty("client2");
-
-        Client client = new Client(name, Gender.MALE);
-        client.setCity("Kiev");
-
-        AbstractAccount checking = (CheckingAccount) applicationContext.getBean("checkingAccount2");
-
-        client.addAccount(checking);
-
-        return client;
-    }
-
     @Bean(name = "client1")
-    public Client getDemoClient1()
-    {
+    public Client getDemoClient1() {
         String name = environment.getProperty("client1");
 
         Client client = new Client(name, Gender.MALE);
         client.setCity("Moscow");
 
         AbstractAccount checking = (CheckingAccount) applicationContext.getBean("checkingAccount1");
+        AbstractAccount saving = (SavingAccount) applicationContext.getBean("savingAccount1");
+
+        client.addAccount(checking);
+        client.addAccount(saving);
+
+        return client;
+    }
+
+    @Bean(name = "client2")
+    public Client getDemoClient2() {
+        String name = environment.getProperty("client2");
+
+        Client client = new Client(name, Gender.MALE);
+        client.setCity("Kiev");
+
+        AbstractAccount checking = (CheckingAccount) applicationContext.getBean("checkingAccount2");
 
         client.addAccount(checking);
 

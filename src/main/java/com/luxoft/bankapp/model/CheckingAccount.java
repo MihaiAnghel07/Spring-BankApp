@@ -2,7 +2,9 @@ package com.luxoft.bankapp.model;
 
 import com.luxoft.bankapp.exceptions.OverDraftLimitExceededException;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CheckingAccount extends AbstractAccount {
 
     private double overdraft = 0;
